@@ -8,15 +8,14 @@ columns = list(range(17,90))
 df = pd.read_csv("Arm_TeleOp_numcoded.csv", usecols=columns, skiprows=[1,2])
 #print(df.head(10))
 #print(df.dtypes)
-
-df['sound'] = np.where(df['Q1']%2!=0, 'OBV' , 'SD')#create a new column that contains the sound condition (obv for odd numbers, sd for even numbers)
-print(df.head(10))
-exit()
-
-obviousfilter = df['Q1']%2!=0
-df = df[obviousfilter]
 df.reset_index(inplace=True)
 print(df.head(10))
+
+
+# obviousfilter = df['Q1']%2!=0
+# df = df[obviousfilter]
+# df.reset_index(inplace=True)
+# print(df.head(10))
 
 # soundDesFilter = df['Q1']%2==0
 # df = df[soundDesFilter]
@@ -30,9 +29,10 @@ print(df['Q34'].value_counts())
 df2 = pd.read_json("perf_measures.json")
 #
 
-obviousfilter = df2['PID']%2!=0
-df2 = df2[obviousfilter]
+# obviousfilter = df2['PID']%2!=0
+# df2 = df2[obviousfilter]
 df2.reset_index(inplace=True)
+df2['sound'] = np.where(df2['PID']%2!=0, 'OBV' , 'SD')#create a new column that contains the sound condition (obv for odd numbers, sd for even numbers)
 print(df2.head(10))
 
 # soundDesFilter = df2['PID']%2==0
@@ -74,9 +74,9 @@ df_questions = pd.DataFrame(columns=cols)
 # hence each row will have the PID and condition columns from df2, then sex and age,
 # then the correct set of columns - the first set for the first row for that pid and the 2nd for the second
 
-dfSlice1 = df.iloc[:,np.r_[4:39]]
+dfSlice1 = df.iloc[:, np.r_[4:39]]
 dfSlice1.columns = df_questions.columns
-dfSlice2 = df.iloc[:,np.r_[39:74]]
+dfSlice2 = df.iloc[:, np.r_[39:74]]
 dfSlice2.columns = df_questions.columns
 
 #labels = ['PID', 'condition']
@@ -94,8 +94,8 @@ print(df_questions.head())
 print("df2 sz " + str(len(df2)))
 print("dfq sz " + str(len(df_questions)))
 
-df_final = df2.filter(['PID', 'condition'], axis=1)#.append(df_questions)
-df_final = pd.concat([df_final, df_questions], axis=1)
+#df_final = df2.filter(['PID', 'condition', 'sound'], axis=1)#.append(df_questions)
+df_final = pd.concat([df2, df_questions], axis=1)
 df_final['IPQ3'] = 6 - df_final['IPQ3']
 df_final['IPQ6'] = 6 - df_final['IPQ6']
 df_final['NTLX4'] = 10 - df_final['NTLX4']
@@ -120,8 +120,8 @@ for c in NTLX:
 df_final['NTLX'] = df_final[NTLX].mean(axis=1)
 
 #pd.set_option('display.max_columns', None)
-print(df_final.head())
-
+print(df_final.head(10))
+exit()
 proc_cols = Stress + ['P', 'SP', 'INV', 'EXP', 'SUS', 'NTLX']
 
 for c in proc_cols:
